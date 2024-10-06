@@ -1,3 +1,4 @@
+import { Projectable } from "./../node_modules/sequelize/types/model.d";
 import "reflect-metadata";
 import helmet from "helmet";
 import { ConfigService } from "@nestjs/config";

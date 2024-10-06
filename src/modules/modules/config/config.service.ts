@@ -11,6 +11,8 @@ export class CustomConfigService extends ConfigService {
   }
 
   async get(key: string): Promise<string | undefined> {
+    console.log("key", key);
+    console.log("hello");
     // First, check environment variables
     const envValue = super.get(key);
     if (envValue) {

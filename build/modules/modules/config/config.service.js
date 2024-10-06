@@ -13,6 +13,8 @@ let CustomConfigService = CustomConfigService_1 = class CustomConfigService exte
         this.logger = new common_1.Logger(CustomConfigService_1.name);
     }
     async get(key) {
+        console.log("key", key);
+        console.log("hello");
         // First, check environment variables
         const envValue = super.get(key);
         if (envValue) {

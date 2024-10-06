@@ -4,12 +4,14 @@ import { AppController } from "./app/app.controller";
 import { AppService } from "./app/app.service";
 import { GcpModule } from "./modules/gcp/gcp.module";
 import { ConfigModule } from "./modules/config/config.module"; // Import your custom ConfigModule
+import { ExperimentalModule } from './experimental/experimental.module';
 
 @Module({
   imports: [
-    ConfigModule, // Your custom ConfigModule that uses CustomConfigService
+    ConfigModule, // Custom ConfigModule that uses CustomConfigService
     HttpModule,
-    GcpModule, // GCP-related logic
+    GcpModule,
+    ExperimentalModule, // GCP-related logic
   ],
   controllers: [AppController],
   providers: [AppService],

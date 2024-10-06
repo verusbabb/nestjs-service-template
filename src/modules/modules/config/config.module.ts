@@ -11,14 +11,15 @@ import { CustomConfigService } from "./config.service";
     NestConfigModule.forRoot({
       isGlobal: true, // Make ConfigModule global so that ConfigService is available everywhere
     }),
-    GcpModule, // Import GcpModule to use GcpSecretService within CustomConfigService
+    GcpModule, // Import GcpModule to use GcpService within CustomConfigService
   ],
   providers: [
     {
       provide: ConfigService,
       useClass: CustomConfigService, // Provide the CustomConfigService as the default ConfigService
     },
+    CustomConfigService,
   ],
-  exports: [ConfigService], // Export ConfigService for other modules
+  exports: [ConfigService, CustomConfigService], // Export ConfigService for other modules
 })
 export class ConfigModule {}
