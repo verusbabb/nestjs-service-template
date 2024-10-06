@@ -1,1 +1,1 @@
-{"version":3,"file":"external-party-axios.dto.js","sourceRoot":"","sources":["../../../../../src/modules/gateways/external-party-api/types/external-party-axios.dto.ts"],"names":[],"mappings":";;;AAAA;IAAA;IAEA,CAAC;IAAD,iCAAC;AAAD,CAAC,AAFD,IAEC;AAFY,gEAA0B"}
+{"version":3,"file":"external-party-axios.dto.js","sourceRoot":"","sources":["../../../../../src/modules/gateways/external-party-api/types/external-party-axios.dto.ts"],"names":[],"mappings":";;;AAAA,MAAa,0BAA0B;CAEtC;AAFD,gEAEC"}

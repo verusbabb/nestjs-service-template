@@ -1,22 +1,15 @@
+import { Module, MiddlewareConsumer, NestModule } from "@nestjs/common";
 import { HttpModule } from "@nestjs/axios";
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-
 import { AppController } from "./app/app.controller";
 import { AppService } from "./app/app.service";
+import { GcpModule } from "./modules/gcp/gcp.module";
+import { ConfigModule } from "./modules/config/config.module"; // Import your custom ConfigModule
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      // load: [envConfig] TODO: Add env variables
-    }),
+    ConfigModule, // Your custom ConfigModule that uses CustomConfigService
     HttpModule,
+    GcpModule, // GCP-related logic
   ],
   controllers: [AppController],
   providers: [AppService],
