@@ -1,0 +1,47 @@
+swagger: '2.0'
+host: example-service-proxy-${ENV}${CLOUD_RUN_SUFFIX}
+basePath: /
+schemes:
+  - https
+produces:
+  - application/json
+x-google-backend:
+  address: https://example-service-${ENV}${CLOUD_RUN_SUFFIX}
+  protocol: h2
+  deadline: 300
+x-google-endpoints:
+  - name: example-service-proxy-${ENV}${CLOUD_RUN_SUFFIX}
+    allowCors: true
+security: [] # needed for the api key    
+securityDefinitions:
+  user-platform:
+    type: oauth2
+    flow: implicit
+    x-google-issuer: ${JWT_ISSUER_BASE_URL}
+    x-google-jwks_uri: ${JWT_ISSUER_BASE_URL}.well-known/jwks.json
+    x-google-audiences: ${AUTH0_AUDIENCE_PLATFORM_USER}
+    authorizationUrl: ${JWT_ISSUER_BASE_URL}authorize
+    scopes: {}
+  
+  m2m-internal:
+    type: oauth2
+    flow: implicit
+    x-google-issuer: ${JWT_ISSUER_BASE_URL}
+    x-google-jwks_uri: ${JWT_ISSUER_BASE_URL}.well-known/jwks.json
+    x-google-audiences: ${AUTH0_AUDIENCE_PLATFORM_M2M_INTERNAL}
+    authorizationUrl: ${JWT_ISSUER_BASE_URL}authorize   
+    scopes: {} 
+  
+  m2m-external:
+    type: oauth2
+    flow: implicit
+    x-google-issuer: ${JWT_ISSUER_BASE_URL}
+    x-google-jwks_uri: ${JWT_ISSUER_BASE_URL}.well-known/jwks.json
+    x-google-audiences: ${AUTH0_AUDIENCE_PLATFORM_M2M_EXTERNAL}
+    authorizationUrl: ${JWT_ISSUER_BASE_URL}authorize
+    scopes: {} 
+    
+  x-api-key:
+    type: apiKey
+    name: x-api-key
+    in: header
