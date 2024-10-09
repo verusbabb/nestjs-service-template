@@ -2,9 +2,9 @@ import { Module, MiddlewareConsumer, NestModule } from "@nestjs/common";
 import { HttpModule } from "@nestjs/axios";
 import { AppController } from "./app/app.controller";
 import { AppService } from "./app/app.service";
-import { GcpModule } from "./modules/gcp/gcp.module";
-import { ConfigModule } from "./modules/config/config.module"; // Import your custom ConfigModule
-import { ExperimentalModule } from './experimental/experimental.module';
+import { GcpModule } from "./gcp/gcp.module";
+import { ConfigModule } from "./config/config.module"; // Import your custom ConfigModule
+import { ExperimentalModule } from "./experimental/experimental.module";
 
 @Module({
   imports: [
@@ -16,8 +16,4 @@ import { ExperimentalModule } from './experimental/experimental.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    // https://docs.nestjs.com/middleware#excluding-routes
-  }
-}
+export class AppModule {}

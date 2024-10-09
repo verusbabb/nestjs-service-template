@@ -3,5 +3,6 @@ import { GcpService } from "./gcp.service";
 
 @Module({
   providers: [GcpService],
+  exports: [GcpService],
 })
 export class GcpModule {}
