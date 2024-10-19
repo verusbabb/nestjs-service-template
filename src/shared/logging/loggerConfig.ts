@@ -26,7 +26,6 @@ export const colors = {
 };
 
 export const getLogLevel = (env: typeof process.env): LogLevel => {
-  console.log("env :>> ", env);
   const { NODE_ENV, LOG_LEVEL } = env;
   const key = NODE_ENV as Environment;
 
@@ -48,11 +47,6 @@ export const getLogLevel = (env: typeof process.env): LogLevel => {
   } else {
     level = LEVELS[key] ?? DEFAULT_LOG_LEVEL;
   }
-
-  console.log(`[verus-template] Logger Details:`, {
-    "Environment Vars": { LOG_LEVEL, NODE_ENV },
-    "Computed Vars": { key, validLogLevel, validEnv, level },
-  });
 
   return level;
 };

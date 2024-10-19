@@ -27,8 +27,9 @@ async function bootstrap() {
     bufferLogs: true,
   });
   const nodeEnv: Environment = configService.get("NODE_ENV") ?? Environment.DEV;
-  // app.useLogger(app.get(CustomLogger));
-  app.useLogger(logger);
+  app.useLogger(app.get(CustomLogger));
+  // app.useLogger(new CustomLogger());
+  // app.useLogger(logger);
   app.setGlobalPrefix("api");
 
   // Use the custom ConfigService

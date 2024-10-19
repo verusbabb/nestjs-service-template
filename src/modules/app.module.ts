@@ -6,7 +6,7 @@ import { envConfig } from "../utils/env.config";
 import { AppController } from "./app/app.controller";
 import { AppService } from "./app/app.service";
 import { GoogleCloudStorageModule } from "./gateways/storage/gcp-storage.module";
-import { APP_GUARD } from "@nestjs/core";
+// import { APP_GUARD } from "@nestjs/core";
 // import { RolesGuard } from "../middleware/guards/roles.guard";
 import { ExperimentalModule } from "./experimental/experimental.module";
 import { GcpSecretsManagerModule } from "./secretsManager/secrets-manager.module";
