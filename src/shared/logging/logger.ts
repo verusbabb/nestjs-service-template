@@ -1,13 +1,13 @@
-import winston from 'winston';
-import { context, Span, trace } from '@opentelemetry/api';
-import { LoggingWinston } from '@google-cloud/logging-winston';
-import { Environment } from '../types/be-curatordb.enums';
-import { colors, getLogLevel, levels } from './loggerConfig';
-import { getEnv } from '../../utils/env.config';
+import winston from "winston";
+import { context, Span, trace } from "@opentelemetry/api";
+import { LoggingWinston } from "@google-cloud/logging-winston";
+import { Environment } from "../types/template.enums";
+import { colors, getLogLevel, levels } from "./loggerConfig";
+import { envConfig } from "../../utils/env.config";
 
-const env = getEnv();
-const NODE_ENV = env.NODE_ENV;
-const level = getLogLevel(env);
+const env = envConfig();
+const NODE_ENV = env;
+const level = getLogLevel(process.env);
 
 const loggingWinston = new LoggingWinston();
 const transports: winston.transport[] = [];
@@ -20,11 +20,11 @@ if (NODE_ENV !== Environment.LOCAL) {
 
 export const getOrCreateSpan = (): Span => {
   let span = trace.getSpan(context.active());
-  
+
   if (!span) {
-    span = trace.getTracer('default').startSpan('default-span');
+    span = trace.getTracer("default").startSpan("default-span");
   }
-  
+
   return span;
 };
 
@@ -33,8 +33,8 @@ const tracingFormat = function () {
     const span = getOrCreateSpan();
     if (span) {
       const { traceId, spanId } = span.spanContext();
-      info['traceId'] = traceId;
-      info['spanId'] = spanId;
+      info["traceId"] = traceId;
+      info["spanId"] = spanId;
     }
     return info;
   })();
@@ -47,23 +47,22 @@ if (NODE_ENV === Environment.LOCAL) {
     winston.format.splat(),
     winston.format.errors({ stack: true }),
     winston.format.colorize({ all: true }),
-    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
+    winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss:ms" }),
     winston.format.printf((info) => {
       const logMessage = `[${info.timestamp}] [${info.level}]: ${info.message}`;
       return info.stack ? `${logMessage}\n${info.stack}` : logMessage;
     }),
   );
-  console.log(' if format :>> ',  format);
+  console.log(" if format :>> ", format);
 } else {
-  console.log('NODE_ENV :>> ', NODE_ENV);
   format = winston.format.combine(
     winston.format.splat(),
     winston.format.errors({ stack: true }),
-    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
+    winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss:ms" }),
     tracingFormat(),
-    winston.format.json({ circularValue: '[Circular]' }),
+    winston.format.json({ circularValue: "[Circular]" }),
   );
-  console.log(' else format :>> ',  format);
+  console.log(" else format :>> ", format);
 }
 
 winston.addColors(colors);

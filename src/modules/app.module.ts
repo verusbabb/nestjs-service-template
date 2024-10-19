@@ -7,7 +7,7 @@ import { AppController } from "./app/app.controller";
 import { AppService } from "./app/app.service";
 import { GoogleCloudStorageModule } from "./gateways/storage/gcp-storage.module";
 import { APP_GUARD } from "@nestjs/core";
-import { RolesGuard } from "../middleware/guards/roles.guard";
+// import { RolesGuard } from "../middleware/guards/roles.guard";
 import { ExperimentalModule } from "./experimental/experimental.module";
 import { GcpSecretsManagerModule } from "./secretsManager/secrets-manager.module";
 
@@ -15,7 +15,7 @@ import { GcpSecretsManagerModule } from "./secretsManager/secrets-manager.module
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [envConfig],
+      load: [() => ({ env: envConfig() })],
     }),
     CustomLoggerModule,
     HttpModule,

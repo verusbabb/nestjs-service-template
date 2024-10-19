@@ -1,11 +1,11 @@
-import { Environment } from '../types/be-curatordb.enums';
-import { isValueInStringEnum } from './utils';
+import { Environment } from "../types/template.enums";
+import { isValueInStringEnum } from "./utils";
 
 export enum LogLevel {
-  ERROR = 'error',
-  WARN = 'warn',
-  INFO = 'info',
-  DEBUG = 'debug',
+  ERROR = "error",
+  WARN = "warn",
+  INFO = "info",
+  DEBUG = "debug",
 }
 
 export const DEFAULT_LOG_LEVEL = LogLevel.DEBUG;
@@ -19,13 +19,14 @@ export const levels = {
 };
 
 export const colors = {
-  error: 'red',
-  warn: 'yellow',
-  info: 'blue',
-  debug: 'green',
+  error: "red",
+  warn: "yellow",
+  info: "blue",
+  debug: "green",
 };
 
 export const getLogLevel = (env: typeof process.env): LogLevel => {
+  console.log("env :>> ", env);
   const { NODE_ENV, LOG_LEVEL } = env;
   const key = NODE_ENV as Environment;
 
@@ -48,9 +49,9 @@ export const getLogLevel = (env: typeof process.env): LogLevel => {
     level = LEVELS[key] ?? DEFAULT_LOG_LEVEL;
   }
 
-  console.log(`[curatodb] Logger Details:`, {
-    'Environment Vars': { LOG_LEVEL, NODE_ENV },
-    'Computed Vars': { key, validLogLevel, validEnv, level },
+  console.log(`[verus-template] Logger Details:`, {
+    "Environment Vars": { LOG_LEVEL, NODE_ENV },
+    "Computed Vars": { key, validLogLevel, validEnv, level },
   });
 
   return level;

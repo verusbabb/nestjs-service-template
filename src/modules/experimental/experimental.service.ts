@@ -2,8 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { CreateExperimentalDto } from "./dto/create-experimental.dto";
 import { UpdateExperimentalDto } from "./dto/update-experimental.dto";
 import { GcpSecretsManagerService } from "../secretsManager/secrets-manager.service";
-import { getSecret } from "../../utils/env.config";
-import { GoogleAuth } from "google-auth-library";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class ExperimentalService {
@@ -12,6 +11,7 @@ export class ExperimentalService {
   constructor(
     // private readonly configService: ConfigService,
     private readonly gcpSecretsManagerService: GcpSecretsManagerService,
+    private readonly configService: ConfigService,
   ) {}
 
   async getSecretValue(): Promise<string> {
