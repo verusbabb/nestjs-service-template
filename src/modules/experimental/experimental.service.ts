@@ -1,24 +1,27 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { CreateExperimentalDto } from "./dto/create-experimental.dto";
 import { UpdateExperimentalDto } from "./dto/update-experimental.dto";
-import { CustomConfigService } from "../config/config.service";
+import { GcpSecretsManagerService } from "../secretsManager/secrets-manager.service";
+import { getSecret } from "../../utils/env.config";
+import { GoogleAuth } from "google-auth-library";
 
 @Injectable()
 export class ExperimentalService {
   private readonly logger = new Logger(ExperimentalService.name);
 
-  constructor(private readonly configService: CustomConfigService) {
-    this.logger.log(`CustomConfigService injected: ${!!this.configService}`);
-    this.logger.log(
-      `CustomConfigService methods: ${Object.keys(this.configService)}`,
-    );
-  }
+  constructor(
+    // private readonly configService: ConfigService,
+    private readonly gcpSecretsManagerService: GcpSecretsManagerService,
+  ) {}
 
   async getSecretValue(): Promise<string> {
     this.logger.log("getSecretValue called");
-    const secretValue = await this.configService.get("POSTGRES_HOST");
+    // Manually load the service account and log the project ID
 
-    this.logger.log({ secretValue });
+    const secretValue = await this.gcpSecretsManagerService.loadSecretVersion(
+      "POSTGRES_HOST",
+      "1",
+    );
 
     if (!secretValue) {
       throw new Error("Secret not found");

@@ -1,11 +1,10 @@
 import { Module } from "@nestjs/common";
 import { ExperimentalService } from "./experimental.service";
 import { ExperimentalController } from "./experimental.controller";
-import { ConfigModule } from "../config/config.module";
+import { GcpSecretsManagerService } from "../secretsManager/secrets-manager.service";
 
 @Module({
-  imports: [ConfigModule],
   controllers: [ExperimentalController],
-  providers: [ExperimentalService],
+  providers: [ExperimentalService, GcpSecretsManagerService],
 })
 export class ExperimentalModule {}

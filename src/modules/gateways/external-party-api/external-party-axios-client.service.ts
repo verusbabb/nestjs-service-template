@@ -8,7 +8,10 @@ export class ExternalPartyAxiosClientService {
   private readonly logger = new Logger(ExternalPartyAxiosClientService.name);
   private baseUrl = '';
 
-  constructor(private readonly httpService: HttpService, private readonly configService: ConfigService) {
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
+  ) {
     this.baseUrl = this.configService.get<string>('EXTERNAL_PARTY_BASE_URL') ?? 'https://default-value.whatever';
   }
 

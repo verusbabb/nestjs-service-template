@@ -11,19 +11,16 @@ export class AppService {
 
   private readonly logger = new Logger(AppService.name);
 
-  // async pingDatabase(): Promise<boolean> {
-  //   this.logger.debug('[pingDatabase]');
-  //   const database_check = await getDatabaseConnection();
-  //   return database_check ? true : false;
-  // }
+  async healthCheck(): Promise<string> {
+    this.logger.log("[healthCheck]");
 
-  async healthCheck(): Promise<{ status: string }> {
-    this.logger.debug("[healthCheck]");
     try {
-      console.log("health check");
-      return { status: "ok" };
+      // Check service name from environment
+      const serviceName = this.configService.get<string>("FRIENDLY_NAME");
+
+      return `${serviceName} is Alive and Healthy`;
     } catch (e) {
-      this.logger.error("Health check failed", e);
+      this.logger.error(e.message);
       throw new InternalServerErrorException("Health check failed");
     }
   }

@@ -1,36 +1,17 @@
-import { Projectable } from "./../node_modules/sequelize/types/model.d";
 import "reflect-metadata";
 import helmet from "helmet";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import { Logger, ValidationPipe } from "@nestjs/common";
-import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
-
+import { envConfig } from "./utils/env.config";
 import { AppModule } from "./modules/app.module";
 
 async function bootstrap() {
-  const app_id = "Template";
-  const logger = new Logger(`Verus ${app_id}`);
+  const appId = "Template";
+  const logger = new Logger(`Verus ${appId}`);
 
   // Initialize GCP Secret Manager client
-  const secretManager = new SecretManagerServiceClient();
-
-  // Create a custom ConfigService that uses GCP Secret Manager
-  const configService = new ConfigService(async (key: string) => {
-    try {
-      const [version] = await secretManager.accessSecretVersion({
-        name: `projects/${process.env.GCP_PROJECT_ID}/secrets/${key}/versions/latest`,
-      });
-      return version?.payload?.data?.toString();
-    } catch (error) {
-      if (error instanceof Error) {
-        logger.error(`Failed to fetch secret ${key}: ${error.message}`);
-      } else {
-        logger.error(`Failed to fetch secret ${key}: ${String(error)}`);
-      }
-      return undefined;
-    }
-  });
+  const configService = new ConfigService();
 
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
@@ -48,6 +29,7 @@ async function bootstrap() {
   const port = (await configService.get("APP_EXAMPLE_SERVICE_PORT")) || 8110;
 
   app.useLogger(logger);
+  envConfig();
 
   app.use(
     helmet({
