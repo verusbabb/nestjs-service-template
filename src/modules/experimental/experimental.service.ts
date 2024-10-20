@@ -16,7 +16,6 @@ export class ExperimentalService {
 
   async getSecretValue(): Promise<string> {
     this.logger.log("getSecretValue called");
-    // Manually load the service account and log the project ID
 
     const secretValue = await this.gcpSecretsManagerService.loadSecretVersion(
       "POSTGRES_HOST",

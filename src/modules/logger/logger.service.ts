@@ -1,52 +1,28 @@
-import { LoggerService } from '@nestjs/common';
-import { Logger } from '../../shared/logging/logger';
+import { Injectable, LoggerService } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { createLogger } from "../../shared/logging";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+@Injectable()
 export class CustomLogger implements LoggerService {
-  private finalContext(optionalParams: string | any[]) {
-    let context = '';
+  private readonly logger;
 
-    if (optionalParams.length === 1 && typeof optionalParams[0] === 'string') {
-      context = optionalParams[0];
-    } else if (optionalParams.length > 1) {
-      context = optionalParams[optionalParams.length - 1];
-    }
-    return context;
-  }
-
-  private finalMessage(message: any, optionalParams: string | any[]) {
-    let fullMessage = [message];
-    if (optionalParams.length > 1 && typeof optionalParams[0] === 'string') {
-      fullMessage = [optionalParams[0], JSON.stringify(message)];
-    }
-    return fullMessage;
+  constructor(private readonly configService: ConfigService) {
+    this.logger = createLogger(this.configService);
   }
 
   log(message: any, ...optionalParams: any[]) {
-    const context = this.finalContext(optionalParams);
-    const fullMessage = this.finalMessage(message, optionalParams);
-
-    Logger.info(`[${context}] ${fullMessage}`);
+    this.logger.info(message, ...optionalParams);
   }
 
   error(message: any, ...optionalParams: any[]) {
-    const context = this.finalContext(optionalParams);
-    const fullMessage = this.finalMessage(message, optionalParams);
-
-    Logger.error(`[${context}] ${fullMessage}`);
+    this.logger.error(message, ...optionalParams);
   }
 
   warn(message: any, ...optionalParams: any[]) {
-    const context = this.finalContext(optionalParams);
-    const fullMessage = this.finalMessage(message, optionalParams);
-
-    Logger.warn(`[${context}] ${fullMessage}`);
+    this.logger.warn(message, ...optionalParams);
   }
 
   debug(message: any, ...optionalParams: any[]) {
-    const context = this.finalContext(optionalParams);
-    const fullMessage = this.finalMessage(message, optionalParams);
-
-    Logger.debug(`[${context}] ${fullMessage}`);
+    this.logger.debug(message, ...optionalParams);
   }
 }

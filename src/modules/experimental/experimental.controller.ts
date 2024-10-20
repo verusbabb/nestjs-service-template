@@ -16,6 +16,7 @@ export class ExperimentalController {
   constructor(private readonly experimentalService: ExperimentalService) {}
 
   @Get("/secret")
+  //use logger to print a log of this controller endpoint running
   async getSecretValue() {
     return this.experimentalService.getSecretValue();
   }
