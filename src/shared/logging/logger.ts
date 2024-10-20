@@ -3,7 +3,6 @@ import { LoggingWinston } from "@google-cloud/logging-winston";
 import { ConfigService } from "@nestjs/config";
 import { getLogLevel, colors } from "./loggerConfig";
 
-// Add custom colors for each log level
 winston.addColors(colors);
 
 export const createLogger = (configService: ConfigService) => {
