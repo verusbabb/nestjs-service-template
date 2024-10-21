@@ -4,7 +4,6 @@ import { ConfigService } from "@nestjs/config";
 import { getLogLevel, colors } from "./loggerConfig";
 
 //add custom colors to winston
-//another comment
 winston.addColors(colors);
 
 export const createLogger = (configService: ConfigService) => {
