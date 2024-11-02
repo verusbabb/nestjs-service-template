@@ -1,17 +1,22 @@
-import { INestApplication } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { getPackageInfo } from '../../utils/getCleanedPackageName';
+import { INestApplication } from "@nestjs/common";
+import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import { getPackageInfo } from "../../utils/getCleanedPackageName";
+import { ConfigService } from "@nestjs/config";
 
 function buildSwagger(app: INestApplication, appId: string) {
-  const title = `${appId} Service ` + '(${ENV})';
   const { packageVersion: packageVersion } = getPackageInfo();
-  // const configService = app.get(ConfigService);
+  const configService = app.get(ConfigService);
 
+  // Access the ENV variable
+  const env = configService.get<string>("NODE_ENV");
+  const title = `${appId} Service ` + `(${env})`;
+
+  // Setup Swagger options and include the actual ENV value
   const options = new DocumentBuilder()
-    .setTitle(title)
+    .setTitle(`${title}`)
     .setDescription(`Backend ${appId} Service`)
     .setVersion(packageVersion)
-    .addTag('#tag')
+    .addTag("#tag")
     // Experimental changes (FIGURE OUT which one to use)
     // https://stackoverflow.com/questions/54802832/is-it-possible-to-add-authentication-to-access-to-nestjs-swagger-explorer
     // https://docs.nestjs.com/openapi/security#oauth2-authentication
@@ -50,5 +55,5 @@ function buildSwagger(app: INestApplication, appId: string) {
 
 export function setupSwagger(app: INestApplication, appId: string) {
   const document = buildSwagger(app, appId);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup("api", app, document);
 }
