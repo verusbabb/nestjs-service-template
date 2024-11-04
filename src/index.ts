@@ -1,7 +1,8 @@
+import "dotenv/config"; // This manually loads dotenv before anything else
 import "reflect-metadata";
 import helmet from "helmet";
 import { NestFactory } from "@nestjs/core";
-import { Logger, ValidationPipe } from "@nestjs/common";
+import { ValidationPipe } from "@nestjs/common";
 import { AppModule } from "./modules/app.module";
 import { setupSwagger } from "./shared/swagger";
 import nocache from "nocache";
