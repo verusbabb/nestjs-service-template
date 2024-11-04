@@ -7,6 +7,8 @@ import { AppService } from "./app/app.service";
 import { GoogleCloudStorageModule } from "./gateways/storage/gcp-storage.module";
 import { ExperimentalModule } from "./experimental/experimental.module";
 import { GcpSecretsManagerModule } from "./secretsManager/secrets-manager.module";
+import { DatabaseModule } from "./database/database.module";
+import { UserModule } from "./user/user.module";
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { GcpSecretsManagerModule } from "./secretsManager/secrets-manager.module
     GoogleCloudStorageModule,
     ExperimentalModule,
     GcpSecretsManagerModule,
+    DatabaseModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
