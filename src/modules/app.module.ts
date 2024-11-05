@@ -5,10 +5,10 @@ import { LoggerModule, LoggerMiddleware } from "./logger";
 import { AppController } from "./app/app.controller";
 import { AppService } from "./app/app.service";
 import { GoogleCloudStorageModule } from "./gateways/storage/gcp-storage.module";
-import { ExperimentalModule } from "./experimental/experimental.module";
 import { GcpSecretsManagerModule } from "./secretsManager/secrets-manager.module";
 import { DatabaseModule } from "./database/database.module";
 import { UserModule } from "./user/user.module";
+import { CommentModule } from "./comment/comment.module";
 
 @Module({
   imports: [
@@ -19,10 +19,10 @@ import { UserModule } from "./user/user.module";
     LoggerModule,
     HttpModule,
     GoogleCloudStorageModule,
-    ExperimentalModule,
     GcpSecretsManagerModule,
     DatabaseModule,
     UserModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

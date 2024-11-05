@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
 import { SecretManagerServiceClient } from "@google-cloud/secret-manager";
-import { getSecret } from "../../utils";
 import { ConfigService } from "@nestjs/config";
 
 @Injectable()
