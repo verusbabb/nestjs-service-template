@@ -10,41 +10,68 @@ export class UserService {
   private readonly logger = new Logger(UserService.name);
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    this.logger.log("Creating user", { createUserDto });
-    const newUser = new this.userModel(createUserDto);
-    return newUser.save();
+    try {
+      this.logger.log("Creating user", { createUserDto });
+      const newUser = new this.userModel(createUserDto);
+      return newUser.save();
+    } catch (error) {
+      this.logger.error("Error creating user", { error, createUserDto });
+      throw error;
+    }
   }
 
-  async findUserById(userId: string) {
-    this.logger.log("Finding user by ID", { userId });
-    return this.userModel.findById(userId).exec();
+  async findUserById(userId: Types.ObjectId) {
+    try {
+      this.logger.log("Finding user by ID", { userId });
+      return this.userModel.findById(userId).exec();
+    } catch (error) {
+      this.logger.error("Error finding user by ID", { error, userId });
+      throw error;
+    }
   }
 
-  async findUserWithComments(userId: string) {
-    this.logger.log("Finding user with comments", { userId });
-    return this.userModel.findById(userId).populate("comments").exec();
+  async findUserWithComments(userId: Types.ObjectId) {
+    try {
+      this.logger.log("Finding user with comments", { userId });
+      return this.userModel.findById(userId).populate("comments").exec();
+    } catch (error) {
+      this.logger.error("Error finding user with comments", { error, userId });
+      throw error;
+    }
   }
 
-  async deleteUser(userId: string): Promise<User | null> {
-    this.logger.log("Deleting user", { userId });
-    return this.userModel.findByIdAndDelete(userId).exec();
+  async deleteUser(userId: Types.ObjectId): Promise<User | null> {
+    try {
+      this.logger.log("Deleting user", { userId });
+      return this.userModel.findByIdAndDelete(userId).exec();
+    } catch (error) {
+      this.logger.error("Error deleting user", { error, userId });
+      throw error;
+    }
   }
 
   async updateUser(
-    userId: string,
+    userId: Types.ObjectId,
     updateUserDto: UpdateUserDto,
   ): Promise<User | null> {
-    this.logger.log("Updating user", { userId, updateUserDto });
-    // Validate that userId is a valid ObjectId
-    if (!Types.ObjectId.isValid(userId)) {
-      throw new Error("Invalid user ID format");
-    }
+    try {
+      this.logger.log("Updating user", { userId, updateUserDto });
+      if (!Types.ObjectId.isValid(userId)) {
+        throw new Error("Invalid user ID format");
+      }
 
-    // Perform the update operation
-    return this.userModel
-      .findByIdAndUpdate(new Types.ObjectId(userId), updateUserDto, {
-        new: true,
-      })
-      .exec();
+      return this.userModel
+        .findByIdAndUpdate(new Types.ObjectId(userId), updateUserDto, {
+          new: true,
+        })
+        .exec();
+    } catch (error) {
+      this.logger.error("Error updating user", {
+        error,
+        userId,
+        updateUserDto,
+      });
+      throw error;
+    }
   }
 }

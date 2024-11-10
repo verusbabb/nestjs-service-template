@@ -12,6 +12,7 @@ import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { Types } from "mongoose";
 
 @Controller("users")
 export class UserController {
@@ -22,32 +23,52 @@ export class UserController {
   @ApiResponse({ status: 200, description: "User created successfully" })
   @Post()
   async createUser(@Body() createUserDto: CreateUserDto) {
-    this.logger.log("Creating user", { createUserDto });
-    return this.userService.createUser(createUserDto);
+    try {
+      this.logger.log("Creating user", { createUserDto });
+      return await this.userService.createUser(createUserDto);
+    } catch (error) {
+      this.logger.error("Error creating user", { error, createUserDto });
+      throw error;
+    }
   }
 
   @ApiOperation({ summary: "Find a user by ID" })
   @ApiResponse({ status: 200, description: "User found successfully" })
   @Get(":id")
-  async findUserById(@Param("id") userId: string) {
-    this.logger.log("Finding user by ID", { userId });
-    return this.userService.findUserById(userId);
+  async findUserById(@Param("id") userId: Types.ObjectId) {
+    try {
+      this.logger.log("Finding user by ID", { userId });
+      return await this.userService.findUserById(userId);
+    } catch (error) {
+      this.logger.error("Error finding user by ID", { error, userId });
+      throw error;
+    }
   }
 
   @ApiOperation({ summary: "Find a user with comments" })
   @ApiResponse({ status: 200, description: "User found successfully" })
   @Get(":id/comments")
-  async findUserWithComments(@Param("id") userId: string) {
-    this.logger.log("Finding user with comments", { userId });
-    return this.userService.findUserWithComments(userId);
+  async findUserWithComments(@Param("id") userId: Types.ObjectId) {
+    try {
+      this.logger.log("Finding user with comments", { userId });
+      return await this.userService.findUserWithComments(userId);
+    } catch (error) {
+      this.logger.error("Error finding user with comments", { error, userId });
+      throw error;
+    }
   }
 
   @ApiOperation({ summary: "Delete a user" })
   @ApiResponse({ status: 200, description: "User deleted successfully" })
   @Delete(":id")
-  async deleteUser(@Param("id") userId: string) {
-    this.logger.log("Deleting user", { userId });
-    return this.userService.deleteUser(userId);
+  async deleteUser(@Param("id") userId: Types.ObjectId) {
+    try {
+      this.logger.log("Deleting user", { userId });
+      return await this.userService.deleteUser(userId);
+    } catch (error) {
+      this.logger.error("Error deleting user", { error, userId });
+      throw error;
+    }
   }
 
   // update user
@@ -55,10 +76,19 @@ export class UserController {
   @ApiResponse({ status: 200, description: "User updated successfully" })
   @Put(":id")
   async updateUser(
-    @Param("id") userId: string,
+    @Param("id") userId: Types.ObjectId,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    this.logger.log("Updating user", { userId, updateUserDto });
-    return this.userService.updateUser(userId, updateUserDto);
+    try {
+      this.logger.log("Updating user", { userId, updateUserDto });
+      return await this.userService.updateUser(userId, updateUserDto);
+    } catch (error) {
+      this.logger.error("Error updating user", {
+        error,
+        userId,
+        updateUserDto,
+      });
+      throw error;
+    }
   }
 }

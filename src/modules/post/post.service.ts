@@ -1,26 +1,60 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
+import { Injectable, Logger } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model, Types } from "mongoose";
+import { CreatePostDto } from "./dto/create-post.dto";
+import { UpdatePostDto } from "./dto/update-post.dto";
+import { Post as PostSchema } from "./schemas/post.schema";
 
 @Injectable()
 export class PostService {
-  create(createPostDto: CreatePostDto) {
-    return 'This action adds a new post';
+  private readonly logger = new Logger(PostService.name);
+
+  constructor(
+    @InjectModel(PostSchema.name) private postModel: Model<PostSchema>,
+  ) {}
+
+  async create(createPostDto: CreatePostDto) {
+    try {
+      this.logger.log("Creating post", { createPostDto });
+      const newPost = new this.postModel(createPostDto);
+      return await newPost.save();
+    } catch (error) {
+      this.logger.error("Failed to create post", { error, createPostDto });
+      throw new Error(`Failed to create post: ${error.message}`);
+    }
   }
 
-  findAll() {
-    return `This action returns all post`;
+  async findAll() {
+    try {
+      return this.postModel.find().exec();
+    } catch (error) {
+      throw new Error(`Failed to fetch posts: ${error.message}`);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
+  async findOne(id: Types.ObjectId) {
+    try {
+      return this.postModel.findById(id).exec();
+    } catch (error) {
+      throw new Error(`Failed to fetch post ${id}: ${error.message}`);
+    }
   }
 
-  update(id: number, updatePostDto: UpdatePostDto) {
-    return `This action updates a #${id} post`;
+  async update(id: Types.ObjectId, updatePostDto: UpdatePostDto) {
+    try {
+      return this.postModel
+        .findByIdAndUpdate(id, updatePostDto, { new: true })
+        .exec();
+    } catch (error) {
+      throw new Error(`Failed to update post ${id}: ${error.message}`);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  async remove(id: Types.ObjectId) {
+    try {
+      return this.postModel.findByIdAndDelete(id).exec();
+    } catch (error) {
+      throw new Error(`Failed to remove post ${id}: ${error.message}`);
+    }
   }
 }

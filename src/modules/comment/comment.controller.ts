@@ -12,6 +12,7 @@ import { CommentService } from "./comment.service";
 import { CreateCommentDto } from "./dto/create-comment.dto";
 import { UpdateCommentDto } from "./dto/update-comment.dto";
 import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { Types } from "mongoose";
 
 @Controller("comments")
 export class CommentController {
@@ -22,22 +23,33 @@ export class CommentController {
   @ApiResponse({ status: 200, description: "Comment created successfully" })
   @Post()
   async createComment(@Body() createCommentDto: CreateCommentDto) {
-    this.logger.log("Creating comment", { createCommentDto });
-    return this.commentService.createComment(createCommentDto);
+    try {
+      this.logger.log("Creating comment", { createCommentDto });
+      return await this.commentService.createComment(createCommentDto);
+    } catch (error) {
+      this.logger.error("Error creating comment", { error, createCommentDto });
+      throw error;
+    }
   }
+
   @ApiOperation({ summary: "Find all comments" })
   @ApiResponse({ status: 200, description: "Comments found successfully" })
   @Get()
   async findAllComments() {
-    this.logger.log("Finding all comments");
-    return this.commentService.findAllComments();
+    try {
+      this.logger.log("Finding all comments");
+      return await this.commentService.findAllComments();
+    } catch (error) {
+      this.logger.error("Error finding all comments", { error });
+      throw error;
+    }
   }
 
   @ApiOperation({ summary: "Find a comment by ID" })
   @ApiResponse({ status: 200, description: "Comment found successfully" })
   @ApiResponse({ status: 404, description: "Comment not found" })
   @Get(":id")
-  async findCommentById(@Param("id") commentId: string) {
+  async findCommentById(@Param("id") commentId: Types.ObjectId) {
     this.logger.log("Finding comment by ID", { commentId });
     return this.commentService.findCommentById(commentId);
   }
@@ -46,7 +58,7 @@ export class CommentController {
   @ApiResponse({ status: 200, description: "Comment found successfully" })
   @ApiResponse({ status: 404, description: "Comment not found" })
   @Get(":id/user")
-  async findCommentWithUser(@Param("id") commentId: string) {
+  async findCommentWithUser(@Param("id") commentId: Types.ObjectId) {
     this.logger.log("Finding comment with user", { commentId });
     return this.commentService.findCommentWithUser(commentId);
   }
@@ -55,7 +67,7 @@ export class CommentController {
   @ApiResponse({ status: 200, description: "Comments found successfully" })
   @ApiResponse({ status: 404, description: "User not found" })
   @Get(":id/user/comments")
-  async findAllCommentsByUserId(@Param("id") userId: string) {
+  async findAllCommentsByUserId(@Param("id") userId: Types.ObjectId) {
     this.logger.log("Finding all comments by user ID", { userId });
     return this.commentService.findAllCommentsByUserId(userId);
   }
@@ -65,9 +77,14 @@ export class CommentController {
   @ApiResponse({ status: 200, description: "Comment deleted successfully" })
   @ApiResponse({ status: 404, description: "Comment not found" })
   @Delete(":id")
-  async deleteComment(@Param("id") commentId: string) {
-    this.logger.log("Deleting comment", { commentId });
-    return this.commentService.deleteComment(commentId);
+  async deleteComment(@Param("id") commentId: Types.ObjectId) {
+    try {
+      this.logger.log("Deleting comment", { commentId });
+      return await this.commentService.deleteComment(commentId);
+    } catch (error) {
+      this.logger.error("Error deleting comment", { error, commentId });
+      throw error;
+    }
   }
 
   // update comment
@@ -76,7 +93,7 @@ export class CommentController {
   @ApiResponse({ status: 404, description: "Comment not found" })
   @Put(":id")
   async updateComment(
-    @Param("id") commentId: string,
+    @Param("id") commentId: Types.ObjectId,
     @Body() updateCommentDto: UpdateCommentDto,
   ) {
     this.logger.log("Updating comment", { commentId, updateCommentDto });
