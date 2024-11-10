@@ -7,12 +7,15 @@ import {
   Delete,
   Put,
   Logger,
+  UseGuards,
 } from "@nestjs/common";
 import { PostService } from "./post.service";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { UpdatePostDto } from "./dto/update-post.dto";
 import { ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { Types } from "mongoose";
+import { RolesGuard } from "../../middleware/guards/roles.guard";
+import { JwtAuthGuard } from "../../middleware/guards/jwt-auth.guard";
 
 @Controller("post")
 export class PostController {
@@ -23,6 +26,7 @@ export class PostController {
   @ApiResponse({ status: 201, description: "Post created successfully" })
   @ApiResponse({ status: 400, description: "Bad request" })
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async create(@Body() createPostDto: CreatePostDto) {
     try {
       this.logger.log("Creating post", { createPostDto });

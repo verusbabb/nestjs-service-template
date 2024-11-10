@@ -4,6 +4,8 @@ import { Model, Types } from "mongoose";
 import { User } from "./schemas/user.schema";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import * as bcrypt from "bcrypt";
+
 @Injectable()
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
@@ -20,12 +22,37 @@ export class UserService {
     }
   }
 
+  async register(createUserDto: CreateUserDto): Promise<User> {
+    const { password, ...userData } = createUserDto;
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new this.userModel({
+      ...userData,
+      password: hashedPassword,
+    });
+
+    return newUser.save();
+  }
+
   async findUserById(userId: Types.ObjectId) {
     try {
       this.logger.log("Finding user by ID", { userId });
       return this.userModel.findById(userId).exec();
     } catch (error) {
       this.logger.error("Error finding user by ID", { error, userId });
+      throw error;
+    }
+  }
+
+  async findByUsername(email: string) {
+    try {
+      console.log("email", email);
+      this.logger.log("Finding user by username", { email });
+      const user = await this.userModel.findOne({ email }).exec();
+      console.log("user", user);
+      return user;
+    } catch (error) {
+      this.logger.error("Error finding user by username", { error, email });
       throw error;
     }
   }

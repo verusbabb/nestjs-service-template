@@ -7,12 +7,14 @@ import {
   Delete,
   Put,
   Logger,
+  BadRequestException,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { Types } from "mongoose";
+import { User } from "./schemas/user.schema";
 
 @Controller("users")
 export class UserController {
@@ -30,6 +32,20 @@ export class UserController {
       this.logger.error("Error creating user", { error, createUserDto });
       throw error;
     }
+  }
+
+  @Post("register")
+  async register(@Body() createUserDto: CreateUserDto): Promise<User> {
+    // Check if the username is already taken
+    const existingUser = await this.userService.findByUsername(
+      createUserDto.email,
+    );
+    if (existingUser) {
+      throw new BadRequestException("Username is already taken");
+    }
+
+    // Register the new user
+    return this.userService.register(createUserDto);
   }
 
   @ApiOperation({ summary: "Find a user by ID" })
