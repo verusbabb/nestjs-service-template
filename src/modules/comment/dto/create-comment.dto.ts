@@ -1,19 +1,34 @@
-import { IsNotEmpty, IsString } from "class-validator";
-import { Types } from "mongoose";
+import {
+  IsNotEmpty,
+  IsString,
+  IsArray,
+  ArrayNotEmpty,
+  IsMongoId,
+} from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
+import { Types } from "mongoose";
+
+export interface ICreateComment {
+  content: string[];
+  user: Types.ObjectId;
+}
+
 export class CreateCommentDto {
   @ApiProperty({
     description: "The user's ID",
     example: "60d0fe4f5311236168a109ca",
   })
   @IsNotEmpty()
-  user: Types.ObjectId; // This should be the user's ID
+  @IsMongoId()
+  user: Types.ObjectId; // The user's ID as a MongoDB ObjectId
 
   @ApiProperty({
-    description: "The content of the comment",
-    example: "This is a comment",
+    description:
+      "The content of the comment, with each paragraph as a separate string in an array",
+    example: ["First paragraph.", "Second paragraph.", "Third paragraph."],
   })
-  @IsString()
-  @IsNotEmpty()
-  content: string;
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsString({ each: true })
+  content: string[];
 }

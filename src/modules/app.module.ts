@@ -9,6 +9,7 @@ import { GcpSecretsManagerModule } from "./secretsManager/secrets-manager.module
 import { DatabaseModule } from "./database/database.module";
 import { UserModule } from "./user/user.module";
 import { CommentModule } from "./comment/comment.module";
+import { PostModule } from './post/post.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CommentModule } from "./comment/comment.module";
     DatabaseModule,
     UserModule,
     CommentModule,
+    PostModule,
   ],
   controllers: [AppController],
   providers: [AppService],
