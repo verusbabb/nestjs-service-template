@@ -48,12 +48,4 @@ export class UpdateUserDto {
   @IsOptional()
   @IsEmail()
   email?: string;
-
-  @ApiProperty({
-    description: "The age of the user",
-    example: 25,
-  })
-  @IsOptional()
-  @IsNumber()
-  age?: number;
 }

@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, Types } from "mongoose";
 import { User } from "../../user/schemas/user.schema";
-import { Comment } from "../../comment/schemas/comment.schema";
 
 @Schema({ timestamps: true })
 export class Post extends Document {
@@ -14,8 +13,14 @@ export class Post extends Document {
   @Prop({ type: Types.ObjectId, ref: User.name, required: true })
   author: Types.ObjectId; // Reference to the User who created the post
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: Comment.name }] })
-  comments: Types.ObjectId[]; // Array of references to Comment objects
+  comments: string[]; // Virtual property for comments (not stored in MongoDB)
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
+
+// Set up a virtual field to populate comments dynamically
+PostSchema.virtual("comments", {
+  ref: "Comment",
+  localField: "_id",
+  foreignField: "post",
+});

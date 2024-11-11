@@ -11,6 +11,7 @@ import { Types } from "mongoose";
 export interface ICreateComment {
   content: string[];
   user: Types.ObjectId;
+  post: Types.ObjectId;
 }
 
 export class CreateCommentDto {
@@ -21,6 +22,14 @@ export class CreateCommentDto {
   @IsNotEmpty()
   @IsMongoId()
   user: Types.ObjectId; // The user's ID as a MongoDB ObjectId
+
+  @ApiProperty({
+    description: "The post's ID",
+    example: "60d0fe4f5311236168a109ca",
+  })
+  @IsNotEmpty()
+  @IsMongoId()
+  post: Types.ObjectId; // The post's ID as a MongoDB ObjectId
 
   @ApiProperty({
     description:

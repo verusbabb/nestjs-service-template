@@ -1,0 +1,25 @@
+{
+  "testCommand": "npm run test:unit -- ",
+  "testDirectories": [
+    "test",
+    "__tests__"
+  ],
+  "testFileExtensions": [
+    ".test.ts",
+    ".test.js",
+    ".spec.js",
+    ".spec.ts"
+  ],
+  "testSampleCode": "",
+  "testSpecialConsiderations": "",
+  "defaultTestExtension": ".spec.ts",
+  "gitCommandsConfig": {
+    "allowedExtensions": [
+      ".ts",
+      ".tsx",
+      ".js",
+      ".jsx",
+      ".vue"
+    ]
+  }
+}

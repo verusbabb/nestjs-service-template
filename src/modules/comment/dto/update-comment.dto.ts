@@ -2,7 +2,6 @@ import {
   IsNotEmpty,
   IsString,
   IsArray,
-  ArrayNotEmpty,
   IsMongoId,
   IsOptional,
 } from "class-validator";
@@ -12,6 +11,7 @@ import { Types } from "mongoose";
 export interface IUpdateComment {
   content: string[];
   user: Types.ObjectId;
+  post: Types.ObjectId;
 }
 
 export class UpdateCommentDto {
@@ -32,4 +32,12 @@ export class UpdateCommentDto {
   @IsOptional()
   @IsString({ each: true })
   content: string[];
+
+  @ApiProperty({
+    description: "The post's ID",
+    example: "60d0fe4f5311236168a109ca",
+  })
+  @IsNotEmpty()
+  @IsMongoId()
+  post: Types.ObjectId;
 }

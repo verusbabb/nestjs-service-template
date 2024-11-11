@@ -7,12 +7,17 @@ import {
   Delete,
   Put,
   Logger,
+  UseGuards,
 } from "@nestjs/common";
 import { CommentService } from "./comment.service";
 import { CreateCommentDto } from "./dto/create-comment.dto";
 import { UpdateCommentDto } from "./dto/update-comment.dto";
 import { ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { Types } from "mongoose";
+import { JwtAuthGuard } from "../../middleware/guards/jwt-auth.guard";
+import { UserRole } from "../../shared/types/user.type";
+import { Roles } from "../../middleware/decorators/roles.decorator";
+import { RolesGuard } from "../../middleware/guards/roles.guard";
 
 @Controller("comments")
 export class CommentController {
@@ -22,6 +27,8 @@ export class CommentController {
   @ApiOperation({ summary: "Create a comment" })
   @ApiResponse({ status: 200, description: "Comment created successfully" })
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.USER)
   async createComment(@Body() createCommentDto: CreateCommentDto) {
     try {
       this.logger.log("Creating comment", { createCommentDto });
@@ -35,6 +42,8 @@ export class CommentController {
   @ApiOperation({ summary: "Find all comments" })
   @ApiResponse({ status: 200, description: "Comments found successfully" })
   @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.USER)
   async findAllComments() {
     try {
       this.logger.log("Finding all comments");
@@ -49,6 +58,8 @@ export class CommentController {
   @ApiResponse({ status: 200, description: "Comment found successfully" })
   @ApiResponse({ status: 404, description: "Comment not found" })
   @Get(":id")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.USER)
   async findCommentById(@Param("id") commentId: Types.ObjectId) {
     this.logger.log("Finding comment by ID", { commentId });
     return this.commentService.findCommentById(commentId);
@@ -58,6 +69,8 @@ export class CommentController {
   @ApiResponse({ status: 200, description: "Comment found successfully" })
   @ApiResponse({ status: 404, description: "Comment not found" })
   @Get(":id/user")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.USER)
   async findCommentWithUser(@Param("id") commentId: Types.ObjectId) {
     this.logger.log("Finding comment with user", { commentId });
     return this.commentService.findCommentWithUser(commentId);
@@ -67,6 +80,8 @@ export class CommentController {
   @ApiResponse({ status: 200, description: "Comments found successfully" })
   @ApiResponse({ status: 404, description: "User not found" })
   @Get(":id/user/comments")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.USER)
   async findAllCommentsByUserId(@Param("id") userId: Types.ObjectId) {
     this.logger.log("Finding all comments by user ID", { userId });
     return this.commentService.findAllCommentsByUserId(userId);
@@ -77,6 +92,8 @@ export class CommentController {
   @ApiResponse({ status: 200, description: "Comment deleted successfully" })
   @ApiResponse({ status: 404, description: "Comment not found" })
   @Delete(":id")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   async deleteComment(@Param("id") commentId: Types.ObjectId) {
     try {
       this.logger.log("Deleting comment", { commentId });
@@ -92,6 +109,8 @@ export class CommentController {
   @ApiResponse({ status: 200, description: "Comment updated successfully" })
   @ApiResponse({ status: 404, description: "Comment not found" })
   @Put(":id")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.USER)
   async updateComment(
     @Param("id") commentId: Types.ObjectId,
     @Body() updateCommentDto: UpdateCommentDto,

@@ -26,7 +26,7 @@ export class PostService {
 
   async findAll() {
     try {
-      return this.postModel.find().exec();
+      return this.postModel.find().populate("comments").exec();
     } catch (error) {
       throw new Error(`Failed to fetch posts: ${error.message}`);
     }
@@ -34,7 +34,7 @@ export class PostService {
 
   async findOne(id: Types.ObjectId) {
     try {
-      return this.postModel.findById(id).exec();
+      return this.postModel.findById(id).populate("comments").exec();
     } catch (error) {
       throw new Error(`Failed to fetch post ${id}: ${error.message}`);
     }
@@ -44,6 +44,7 @@ export class PostService {
     try {
       return this.postModel
         .findByIdAndUpdate(id, updatePostDto, { new: true })
+        .populate("comments")
         .exec();
     } catch (error) {
       throw new Error(`Failed to update post ${id}: ${error.message}`);
@@ -52,7 +53,7 @@ export class PostService {
 
   async remove(id: Types.ObjectId) {
     try {
-      return this.postModel.findByIdAndDelete(id).exec();
+      return this.postModel.findByIdAndDelete(id).populate("comments").exec();
     } catch (error) {
       throw new Error(`Failed to remove post ${id}: ${error.message}`);
     }

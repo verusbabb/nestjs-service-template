@@ -20,9 +20,6 @@ export class User extends Document {
 
   @Prop({ required: true })
   role: string;
-
-  @Prop()
-  age?: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

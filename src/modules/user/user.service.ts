@@ -23,15 +23,21 @@ export class UserService {
   }
 
   async register(createUserDto: CreateUserDto): Promise<User> {
-    const { password, ...userData } = createUserDto;
-    const hashedPassword = await bcrypt.hash(password, 10);
+    try {
+      this.logger.log("Registering new user", { createUserDto });
+      const { password, ...userData } = createUserDto;
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new this.userModel({
-      ...userData,
-      password: hashedPassword,
-    });
+      const newUser = new this.userModel({
+        ...userData,
+        password: hashedPassword,
+      });
 
-    return newUser.save();
+      return newUser.save();
+    } catch (error) {
+      this.logger.error("Error registering user", { error, createUserDto });
+      throw error;
+    }
   }
 
   async findUserById(userId: Types.ObjectId) {
@@ -46,10 +52,8 @@ export class UserService {
 
   async findByUsername(email: string) {
     try {
-      console.log("email", email);
       this.logger.log("Finding user by username", { email });
       const user = await this.userModel.findOne({ email }).exec();
-      console.log("user", user);
       return user;
     } catch (error) {
       this.logger.error("Error finding user by username", { error, email });

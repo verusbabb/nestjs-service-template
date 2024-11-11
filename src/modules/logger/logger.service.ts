@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, LoggerService } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { createLogger } from "../../shared/logging";

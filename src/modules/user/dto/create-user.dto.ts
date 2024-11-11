@@ -55,12 +55,4 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
-
-  @ApiProperty({
-    description: "The age of the user",
-    example: 25,
-  })
-  @IsOptional()
-  @IsNumber()
-  age?: number;
 }

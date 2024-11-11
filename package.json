@@ -20,7 +20,7 @@
     "format:fix": "npx prettier --write \"{src,test}/**/*.ts\"",
     "test": "echo \"No test needed\" && exit 0",
     "test:local": "jest --runInBand --detectOpenHandles --coverage",
-    "test:unit": "jest --coverage=false --silent --runInBand --detectOpenHandles --noStackTrace -- ",
+    "test:unit": "jest --coverage=true --silent --runInBand --detectOpenHandles --noStackTrace -- ",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand --detectOpenHandles",
@@ -77,7 +77,9 @@
     "@typescript-eslint/parser": "^8.12.2",
     "eslint": "^9.14.0",
     "globals": "^15.11.0",
+    "jest": "^29.7.0",
     "rimraf": "^6.0.1",
+    "ts-jest": "^29.2.5",
     "typescript": "5.6.3"
   },
   "jest": {

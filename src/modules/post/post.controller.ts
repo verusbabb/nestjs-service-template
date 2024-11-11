@@ -16,6 +16,8 @@ import { ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { Types } from "mongoose";
 import { RolesGuard } from "../../middleware/guards/roles.guard";
 import { JwtAuthGuard } from "../../middleware/guards/jwt-auth.guard";
+import { UserRole } from "../../shared/types/user.type";
+import { Roles } from "../../middleware/decorators/roles.decorator";
 
 @Controller("post")
 export class PostController {
@@ -27,6 +29,7 @@ export class PostController {
   @ApiResponse({ status: 400, description: "Bad request" })
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   async create(@Body() createPostDto: CreatePostDto) {
     try {
       this.logger.log("Creating post", { createPostDto });
@@ -39,6 +42,8 @@ export class PostController {
 
   @ApiOperation({ summary: "Get all posts" })
   @ApiResponse({ status: 200, description: "Retrieved all posts successfully" })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.USER)
   @Get()
   async findAll() {
     try {
@@ -53,6 +58,8 @@ export class PostController {
   @ApiOperation({ summary: "Get a post by ID" })
   @ApiResponse({ status: 200, description: "Post found successfully" })
   @ApiResponse({ status: 404, description: "Post not found" })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.USER)
   @Get(":id")
   async findOne(@Param("id") id: Types.ObjectId) {
     try {
@@ -69,6 +76,8 @@ export class PostController {
   @ApiResponse({ status: 404, description: "Post not found" })
   @ApiResponse({ status: 400, description: "Bad request" })
   @Put(":id")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   async update(
     @Param("id") id: Types.ObjectId,
     @Body() updatePostDto: UpdatePostDto,
@@ -86,6 +95,8 @@ export class PostController {
   @ApiResponse({ status: 200, description: "Post deleted successfully" })
   @ApiResponse({ status: 404, description: "Post not found" })
   @Delete(":id")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   async remove(@Param("id") id: Types.ObjectId) {
     try {
       this.logger.log("Deleting post", { id });
