@@ -11,7 +11,7 @@
     "prebuild": "rimraf dist",
     "build": "nest build",
     "start": "nest start",
-    "start:dev": "NODE_ENV=development GOOGLE_PROJECT_ID=verus-dev-1 nest start --watch",
+    "start:dev": "NODE_ENV=local GOOGLE_PROJECT_ID=verus-dev-1 nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node build/index.js",
     "lint": "eslint \"{src,test}/**/*.ts\"",
