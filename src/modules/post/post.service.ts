@@ -1,4 +1,9 @@
-import { Injectable, Logger } from "@nestjs/common";
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  InternalServerErrorException,
+} from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { CreatePostDto } from "./dto/create-post.dto";
@@ -20,42 +25,94 @@ export class PostService {
       return await newPost.save();
     } catch (error) {
       this.logger.error("Failed to create post", { error, createPostDto });
-      throw new Error(`Failed to create post: ${error.message}`);
+      throw new InternalServerErrorException(
+        `Failed to create post: ${error.message}`,
+      );
     }
   }
 
   async findAll() {
     try {
-      return this.postModel.find().populate("comments").exec();
+      const posts = await this.postModel.find().populate("comments").exec();
+      this.logger.log(`Found ${posts.length} posts`);
+      return posts;
     } catch (error) {
-      throw new Error(`Failed to fetch posts: ${error.message}`);
+      this.logger.error("Failed to fetch posts", { error });
+      throw new InternalServerErrorException(
+        `Failed to fetch posts: ${error.message}`,
+      );
     }
   }
 
   async findOne(id: Types.ObjectId) {
     try {
-      return this.postModel.findById(id).populate("comments").exec();
+      const post = await this.postModel
+        .findById(id)
+        .populate("comments")
+        .exec();
+      if (!post) {
+        throw new NotFoundException(`Post with ID "${id}" not found`);
+      }
+      return post;
     } catch (error) {
-      throw new Error(`Failed to fetch post ${id}: ${error.message}`);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      this.logger.error(`Failed to fetch post ${id}`, { error });
+      throw new InternalServerErrorException(
+        `Failed to fetch post: ${error.message}`,
+      );
     }
   }
 
   async update(id: Types.ObjectId, updatePostDto: UpdatePostDto) {
     try {
-      return this.postModel
+      const updatedPost = await this.postModel
         .findByIdAndUpdate(id, updatePostDto, { new: true })
         .populate("comments")
         .exec();
+
+      if (!updatedPost) {
+        throw new NotFoundException(`Post with ID "${id}" not found`);
+      }
+
+      this.logger.log(`Updated post ${id}`, { updatePostDto });
+      return updatedPost;
     } catch (error) {
-      throw new Error(`Failed to update post ${id}: ${error.message}`);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      this.logger.error(`Failed to update post ${id}`, {
+        error,
+        updatePostDto,
+      });
+      throw new InternalServerErrorException(
+        `Failed to update post: ${error.message}`,
+      );
     }
   }
 
   async remove(id: Types.ObjectId) {
     try {
-      return this.postModel.findByIdAndDelete(id).populate("comments").exec();
+      const deletedPost = await this.postModel
+        .findByIdAndDelete(id)
+        .populate("comments")
+        .exec();
+
+      if (!deletedPost) {
+        throw new NotFoundException(`Post with ID "${id}" not found`);
+      }
+
+      this.logger.log(`Removed post ${id}`);
+      return deletedPost;
     } catch (error) {
-      throw new Error(`Failed to remove post ${id}: ${error.message}`);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      this.logger.error(`Failed to remove post ${id}`, { error });
+      throw new InternalServerErrorException(
+        `Failed to remove post: ${error.message}`,
+      );
     }
   }
 }

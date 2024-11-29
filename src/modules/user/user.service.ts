@@ -2,7 +2,8 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
-  UnauthorizedException,
+  NotFoundException,
+  BadRequestException,
 } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
@@ -18,18 +19,55 @@ export class UserService {
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     try {
-      this.logger.log("Creating user", { createUserDto });
+      if (!createUserDto.email) {
+        throw new BadRequestException("Email is required");
+      }
+
+      this.logger.log("Creating user");
+      const existingUser = await this.userModel
+        .findOne({ email: createUserDto.email })
+        .exec();
+
+      if (existingUser) {
+        throw new BadRequestException("User with this email already exists");
+      }
+
       const newUser = new this.userModel(createUserDto);
-      return newUser.save();
+      return await newUser.save();
     } catch (error) {
       this.logger.error("Error creating user", { error, createUserDto });
-      throw error;
+
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      if (error.name === "MongoServerError" && error.code === 11000) {
+        throw new BadRequestException("Duplicate key error");
+      }
+
+      if (error.name === "ValidationError") {
+        throw new BadRequestException(error.message);
+      }
+
+      throw new InternalServerErrorException("Failed to create user");
     }
   }
 
   async register(createUserDto: CreateUserDto): Promise<User> {
     try {
-      this.logger.log("Registering new user", { createUserDto });
+      if (!createUserDto.password || !createUserDto.email) {
+        throw new BadRequestException("Email and password are required");
+      }
+
+      this.logger.log("Registering new user");
+      const existingUser = await this.userModel
+        .findOne({ email: createUserDto.email })
+        .exec();
+
+      if (existingUser) {
+        throw new BadRequestException("User with this email already exists");
+      }
+
       const { password, ...userData } = createUserDto;
       const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -38,70 +76,135 @@ export class UserService {
         password: hashedPassword,
       });
 
-      return newUser.save();
+      return await newUser.save();
     } catch (error) {
       this.logger.error("Error registering user", { error, createUserDto });
-      throw error;
+
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+
+      if (error.name === "MongoServerError" && error.code === 11000) {
+        throw new BadRequestException("Duplicate key error");
+      }
+
+      if (error.name === "ValidationError") {
+        throw new BadRequestException(error.message);
+      }
+
+      throw new InternalServerErrorException("Failed to register user");
     }
   }
 
   async findUserById(userId: Types.ObjectId) {
     try {
-      this.logger.log("Finding user by ID", { userId });
-      return this.userModel.findById(userId).exec();
+      if (!userId || !Types.ObjectId.isValid(userId)) {
+        throw new BadRequestException("Invalid user ID format");
+      }
+
+      this.logger.log("Finding user by ID");
+      const user = await this.userModel.findById(userId).exec();
+
+      if (!user) {
+        throw new NotFoundException("User not found");
+      }
+
+      return user;
     } catch (error) {
       this.logger.error("Error finding user by ID", { error, userId });
-      throw error;
+
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      ) {
+        throw error;
+      }
+
+      if (error.name === "CastError") {
+        throw new BadRequestException("Invalid user ID format");
+      }
+
+      throw new InternalServerErrorException("Failed to find user");
     }
   }
 
   async findByUsername(email: string) {
     try {
+      if (!email) {
+        throw new BadRequestException("Email is required");
+      }
       this.logger.log("Finding user by username", { email });
 
       const user = await this.userModel.findOne({ email }).exec();
       if (!user) {
-        this.logger.warn("User not found", { email });
-        throw new UnauthorizedException("User not found");
+        throw new NotFoundException("User not found");
       }
 
       return user;
     } catch (error) {
-      if (error instanceof UnauthorizedException) {
-        // Re-throw known exceptions without altering them
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      ) {
         throw error;
       }
-
-      // Log unexpected errors for debugging
-      this.logger.error("Unexpected error finding user by username", {
-        error: error.message,
-        email,
-      });
-
-      // Throw a generic server error for unexpected issues
-      throw new InternalServerErrorException(
-        "An unexpected error occurred while finding the user",
-      );
+      this.logger.error("Error finding user by username", { error, email });
+      throw new InternalServerErrorException("Failed to find user");
     }
   }
 
   async findUserWithComments(userId: Types.ObjectId) {
     try {
+      if (!Types.ObjectId.isValid(userId)) {
+        throw new BadRequestException("Invalid user ID format");
+      }
       this.logger.log("Finding user with comments", { userId });
-      return this.userModel.findById(userId).populate("comments").exec();
+      const user = await this.userModel
+        .findById(userId)
+        .populate("comments")
+        .exec();
+
+      if (!user) {
+        throw new NotFoundException("User not found");
+      }
+
+      return user;
     } catch (error) {
       this.logger.error("Error finding user with comments", { error, userId });
-      throw error;
+
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      ) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException(
+        "Failed to find user with comments",
+      );
     }
   }
 
   async deleteUser(userId: Types.ObjectId): Promise<User | null> {
     try {
+      if (!Types.ObjectId.isValid(userId)) {
+        throw new BadRequestException("Invalid user ID format");
+      }
       this.logger.log("Deleting user", { userId });
-      return this.userModel.findByIdAndDelete(userId).exec();
+      const deletedUser = await this.userModel.findByIdAndDelete(userId).exec();
+      if (!deletedUser) {
+        throw new NotFoundException("User not found");
+      }
+      return deletedUser;
     } catch (error) {
       this.logger.error("Error deleting user", { error, userId });
-      throw error;
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      ) {
+        throw error;
+      }
+      throw new InternalServerErrorException("Failed to delete user");
     }
   }
 
@@ -110,23 +213,33 @@ export class UserService {
     updateUserDto: UpdateUserDto,
   ): Promise<User | null> {
     try {
-      this.logger.log("Updating user", { userId, updateUserDto });
       if (!Types.ObjectId.isValid(userId)) {
-        throw new Error("Invalid user ID format");
+        throw new BadRequestException("Invalid user ID format");
+      }
+      this.logger.log("Updating user", { userId, updateUserDto });
+
+      const updatedUser = await this.userModel
+        .findByIdAndUpdate(userId, updateUserDto, { new: true })
+        .exec();
+
+      if (!updatedUser) {
+        throw new NotFoundException("User not found");
       }
 
-      return this.userModel
-        .findByIdAndUpdate(new Types.ObjectId(userId), updateUserDto, {
-          new: true,
-        })
-        .exec();
+      return updatedUser;
     } catch (error) {
       this.logger.error("Error updating user", {
         error,
         userId,
         updateUserDto,
       });
-      throw error;
+      if (
+        error instanceof BadRequestException ||
+        error instanceof NotFoundException
+      ) {
+        throw error;
+      }
+      throw new InternalServerErrorException("Failed to update user");
     }
   }
 }
