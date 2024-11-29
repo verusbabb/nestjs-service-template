@@ -1,4 +1,9 @@
-import { Injectable, Logger } from "@nestjs/common";
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  UnauthorizedException,
+} from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
 import { User } from "./schemas/user.schema";
@@ -53,11 +58,30 @@ export class UserService {
   async findByUsername(email: string) {
     try {
       this.logger.log("Finding user by username", { email });
+
       const user = await this.userModel.findOne({ email }).exec();
+      if (!user) {
+        this.logger.warn("User not found", { email });
+        throw new UnauthorizedException("User not found");
+      }
+
       return user;
     } catch (error) {
-      this.logger.error("Error finding user by username", { error, email });
-      throw error;
+      if (error instanceof UnauthorizedException) {
+        // Re-throw known exceptions without altering them
+        throw error;
+      }
+
+      // Log unexpected errors for debugging
+      this.logger.error("Unexpected error finding user by username", {
+        error: error.message,
+        email,
+      });
+
+      // Throw a generic server error for unexpected issues
+      throw new InternalServerErrorException(
+        "An unexpected error occurred while finding the user",
+      );
     }
   }
 
