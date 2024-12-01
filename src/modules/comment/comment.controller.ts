@@ -31,10 +31,13 @@ export class CommentController {
   @Roles(UserRole.ADMIN, UserRole.USER)
   async createComment(@Body() createCommentDto: CreateCommentDto) {
     try {
-      this.logger.log("Creating comment", { createCommentDto });
+      this.logger.log("Creating comment", createCommentDto);
       return await this.commentService.createComment(createCommentDto);
     } catch (error) {
-      this.logger.error("Error creating comment", { error, createCommentDto });
+      this.logger.error("Error creating comment", {
+        error: error.message,
+        createCommentDto,
+      });
       throw error;
     }
   }
@@ -49,7 +52,7 @@ export class CommentController {
       this.logger.log("Finding all comments");
       return await this.commentService.findAllComments();
     } catch (error) {
-      this.logger.error("Error finding all comments", { error });
+      this.logger.error("Error finding all comments", { error: error.message });
       throw error;
     }
   }
@@ -87,7 +90,6 @@ export class CommentController {
     return this.commentService.findAllCommentsByUserId(userId);
   }
 
-  // delete comment
   @ApiOperation({ summary: "Delete a comment" })
   @ApiResponse({ status: 200, description: "Comment deleted successfully" })
   @ApiResponse({ status: 404, description: "Comment not found" })
@@ -99,12 +101,14 @@ export class CommentController {
       this.logger.log("Deleting comment", { commentId });
       return await this.commentService.deleteComment(commentId);
     } catch (error) {
-      this.logger.error("Error deleting comment", { error, commentId });
+      this.logger.error("Error deleting comment", {
+        error: error.message,
+        commentId,
+      });
       throw error;
     }
   }
 
-  // update comment
   @ApiOperation({ summary: "Update a comment" })
   @ApiResponse({ status: 200, description: "Comment updated successfully" })
   @ApiResponse({ status: 404, description: "Comment not found" })

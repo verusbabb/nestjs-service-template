@@ -11,7 +11,7 @@ export class AuthController {
 
   @Post("login")
   async login(@Body() credentials: LoginDto) {
-    this.logger.log("Login attempt", { credentials });
+    this.logger.log("Login attempt", credentials);
     try {
       const user = await this.authService.validateUser(
         credentials.email,
@@ -22,6 +22,10 @@ export class AuthController {
       }
       return this.authService.login(user);
     } catch (error) {
+      this.logger.error("Login failed", {
+        error: error.message,
+        email: credentials.email,
+      });
       if (error instanceof UnauthorizedException) {
         throw error;
       }

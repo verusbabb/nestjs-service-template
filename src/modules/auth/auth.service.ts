@@ -37,7 +37,10 @@ export class AuthService {
       delete userObject.password;
       return userObject;
     } catch (error) {
-      this.logger.error("Error validating user", { error, email });
+      this.logger.error("Error validating user", {
+        error: error.message,
+        email,
+      });
 
       if (
         error instanceof BadRequestException ||
@@ -68,9 +71,13 @@ export class AuthService {
       return {
         accessToken,
         refreshToken,
+        user,
       };
     } catch (error) {
-      this.logger.error("Error during login", { error, userId: user?._id });
+      this.logger.error("Error during login", {
+        error: error.message,
+        userId: user?._id,
+      });
 
       if (error instanceof BadRequestException) {
         throw error;
@@ -104,7 +111,10 @@ export class AuthService {
 
       return { accessToken: newAccessToken };
     } catch (error) {
-      this.logger.error("Error refreshing token", { error });
+      this.logger.error("Error refreshing token", {
+        error: error.message,
+        errorType: error.name,
+      });
 
       if (
         error instanceof BadRequestException ||

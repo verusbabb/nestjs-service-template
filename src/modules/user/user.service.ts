@@ -23,7 +23,7 @@ export class UserService {
         throw new BadRequestException("Email is required");
       }
 
-      this.logger.log("Creating user");
+      this.logger.log("Creating user", createUserDto);
       const existingUser = await this.userModel
         .findOne({ email: createUserDto.email })
         .exec();
@@ -35,7 +35,10 @@ export class UserService {
       const newUser = new this.userModel(createUserDto);
       return await newUser.save();
     } catch (error) {
-      this.logger.error("Error creating user", { error, createUserDto });
+      this.logger.error("Error creating user", {
+        error: error.message,
+        createUserDto,
+      });
 
       if (error instanceof BadRequestException) {
         throw error;
@@ -59,7 +62,7 @@ export class UserService {
         throw new BadRequestException("Email and password are required");
       }
 
-      this.logger.log("Registering new user");
+      this.logger.log("Registering new user", createUserDto);
       const existingUser = await this.userModel
         .findOne({ email: createUserDto.email })
         .exec();
@@ -78,7 +81,10 @@ export class UserService {
 
       return await newUser.save();
     } catch (error) {
-      this.logger.error("Error registering user", { error, createUserDto });
+      this.logger.error("Error registering user", {
+        error: error.message,
+        createUserDto,
+      });
 
       if (error instanceof BadRequestException) {
         throw error;
@@ -102,7 +108,7 @@ export class UserService {
         throw new BadRequestException("Invalid user ID format");
       }
 
-      this.logger.log("Finding user by ID");
+      this.logger.log("Finding user by ID", { userId });
       const user = await this.userModel.findById(userId).exec();
 
       if (!user) {
@@ -111,7 +117,10 @@ export class UserService {
 
       return user;
     } catch (error) {
-      this.logger.error("Error finding user by ID", { error, userId });
+      this.logger.error("Error finding user by ID", {
+        error: error.message,
+        userId,
+      });
 
       if (
         error instanceof BadRequestException ||
@@ -142,13 +151,16 @@ export class UserService {
 
       return user;
     } catch (error) {
+      this.logger.error("Error finding user by username", {
+        error: error.message,
+        email,
+      });
       if (
         error instanceof BadRequestException ||
         error instanceof NotFoundException
       ) {
         throw error;
       }
-      this.logger.error("Error finding user by username", { error, email });
       throw new InternalServerErrorException("Failed to find user");
     }
   }
@@ -170,7 +182,10 @@ export class UserService {
 
       return user;
     } catch (error) {
-      this.logger.error("Error finding user with comments", { error, userId });
+      this.logger.error("Error finding user with comments", {
+        error: error.message,
+        userId,
+      });
 
       if (
         error instanceof BadRequestException ||
@@ -197,7 +212,10 @@ export class UserService {
       }
       return deletedUser;
     } catch (error) {
-      this.logger.error("Error deleting user", { error, userId });
+      this.logger.error("Error deleting user", {
+        error: error.message,
+        userId,
+      });
       if (
         error instanceof BadRequestException ||
         error instanceof NotFoundException
@@ -229,7 +247,7 @@ export class UserService {
       return updatedUser;
     } catch (error) {
       this.logger.error("Error updating user", {
-        error,
+        error: error.message,
         userId,
         updateUserDto,
       });

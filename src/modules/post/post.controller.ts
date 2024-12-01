@@ -32,10 +32,13 @@ export class PostController {
   @Roles(UserRole.ADMIN)
   async create(@Body() createPostDto: CreatePostDto) {
     try {
-      this.logger.log("Creating post", { createPostDto });
+      this.logger.log("Creating post", createPostDto);
       return await this.postService.create(createPostDto);
     } catch (error) {
-      this.logger.error("Error creating post", { error, createPostDto });
+      this.logger.error("Error creating post", {
+        error: error.message,
+        createPostDto,
+      });
       throw error;
     }
   }
@@ -50,7 +53,7 @@ export class PostController {
       this.logger.log("Finding all posts");
       return await this.postService.findAll();
     } catch (error) {
-      this.logger.error("Error finding all posts", { error });
+      this.logger.error("Error finding all posts", { error: error.message });
       throw error;
     }
   }
@@ -66,7 +69,7 @@ export class PostController {
       this.logger.log("Finding post by ID", { id });
       return await this.postService.findOne(id);
     } catch (error) {
-      this.logger.error("Error finding post", { error, id });
+      this.logger.error("Error finding post", { error: error.message, id });
       throw error;
     }
   }
@@ -86,7 +89,11 @@ export class PostController {
       this.logger.log("Updating post", { id, updatePostDto });
       return await this.postService.update(id, updatePostDto);
     } catch (error) {
-      this.logger.error("Error updating post", { error, id, updatePostDto });
+      this.logger.error("Error updating post", {
+        error: error.message,
+        id,
+        updatePostDto,
+      });
       throw error;
     }
   }
@@ -102,7 +109,7 @@ export class PostController {
       this.logger.log("Deleting post", { id });
       return await this.postService.remove(id);
     } catch (error) {
-      this.logger.error("Error deleting post", { error, id });
+      this.logger.error("Error deleting post", { error: error.message, id });
       throw error;
     }
   }

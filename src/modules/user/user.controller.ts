@@ -7,7 +7,6 @@ import {
   Delete,
   Put,
   Logger,
-  BadRequestException,
   UseGuards,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
@@ -33,10 +32,13 @@ export class UserController {
   @Roles(UserRole.ADMIN)
   async createUser(@Body() createUserDto: CreateUserDto) {
     try {
-      this.logger.log("Creating user", { createUserDto });
+      this.logger.log("Creating user", createUserDto);
       return await this.userService.createUser(createUserDto);
     } catch (error) {
-      this.logger.error("Error creating user", { error, createUserDto });
+      this.logger.error("Error creating user", {
+        error: error.message,
+        createUserDto,
+      });
       throw error;
     }
   }
@@ -47,25 +49,15 @@ export class UserController {
   @Post("register")
   async register(@Body() createUserDto: CreateUserDto): Promise<User> {
     try {
-      this.logger.log("Registering new user", { createUserDto });
-
-      // Check if the username is already taken
-      const existingUser = await this.userService.findByUsername(
-        createUserDto.email,
-      );
-      if (existingUser) {
-        this.logger.warn("Registration failed - username taken", {
-          email: createUserDto.email,
-        });
-        throw new BadRequestException("Username is already taken");
-      }
-
-      // Register the new user
-      const newUser = await this.userService.register(createUserDto);
+      this.logger.log("Registering new user", createUserDto);
+      const newUser = await this.userService.createUser(createUserDto);
       this.logger.log("User registered successfully", { userId: newUser._id });
       return newUser;
     } catch (error) {
-      this.logger.error("Error registering user", { error, createUserDto });
+      this.logger.error("Error registering user", {
+        error: error.message,
+        createUserDto,
+      });
       throw error;
     }
   }
@@ -80,7 +72,10 @@ export class UserController {
       this.logger.log("Finding user by ID", { userId });
       return await this.userService.findUserById(userId);
     } catch (error) {
-      this.logger.error("Error finding user by ID", { error, userId });
+      this.logger.error("Error finding user by ID", {
+        error: error.message,
+        userId,
+      });
       throw error;
     }
   }
@@ -95,7 +90,10 @@ export class UserController {
       this.logger.log("Finding user with comments", { userId });
       return await this.userService.findUserWithComments(userId);
     } catch (error) {
-      this.logger.error("Error finding user with comments", { error, userId });
+      this.logger.error("Error finding user with comments", {
+        error: error.message,
+        userId,
+      });
       throw error;
     }
   }
@@ -110,7 +108,10 @@ export class UserController {
       this.logger.log("Deleting user", { userId });
       return await this.userService.deleteUser(userId);
     } catch (error) {
-      this.logger.error("Error deleting user", { error, userId });
+      this.logger.error("Error deleting user", {
+        error: error.message,
+        userId,
+      });
       throw error;
     }
   }
@@ -130,7 +131,7 @@ export class UserController {
       return await this.userService.updateUser(userId, updateUserDto);
     } catch (error) {
       this.logger.error("Error updating user", {
-        error,
+        error: error.message,
         userId,
         updateUserDto,
       });

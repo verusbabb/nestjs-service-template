@@ -18,11 +18,14 @@ export class CommentService {
   private readonly logger = new Logger(CommentService.name);
   async createComment(createCommentDto: CreateCommentDto): Promise<Comment> {
     try {
-      this.logger.log("Creating comment", { createCommentDto });
+      this.logger.log("Creating comment", createCommentDto);
       const newComment = new this.commentModel(createCommentDto);
       return await newComment.save();
     } catch (error) {
-      this.logger.error("Error creating comment", { error, createCommentDto });
+      this.logger.error("Error creating comment", {
+        error: error.message,
+        createCommentDto,
+      });
       if (error instanceof Error) {
         throw new InternalServerErrorException(
           `Failed to create comment: ${error.message}`,
@@ -37,7 +40,7 @@ export class CommentService {
       this.logger.log("Finding all comments");
       return await this.commentModel.find().exec();
     } catch (error) {
-      this.logger.error("Error finding all comments", { error });
+      this.logger.error("Error finding all comments", { error: error.message });
       if (error instanceof Error) {
         throw new InternalServerErrorException(
           `Failed to retrieve comments: ${error.message}`,
@@ -57,10 +60,11 @@ export class CommentService {
       return comment;
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
+      this.logger.error("Error finding comment", {
+        error: error.message,
+        commentId,
+      });
       if (error instanceof Error) {
-        this.logger.error(`Error finding comment: ${error.message}`, {
-          commentId,
-        });
         throw new InternalServerErrorException("Failed to retrieve comment");
       }
       throw error;
@@ -81,7 +85,7 @@ export class CommentService {
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       this.logger.error("Error finding comment with user", {
-        error,
+        error: error.message,
         commentId,
       });
       if (error instanceof Error) {
@@ -98,7 +102,10 @@ export class CommentService {
       this.logger.log("Finding all comments by user ID", { userId });
       return await this.commentModel.find({ user: userId }).exec();
     } catch (error) {
-      this.logger.error("Error finding comments by user ID", { error, userId });
+      this.logger.error("Error finding comments by user ID", {
+        error: error.message,
+        userId,
+      });
       if (error instanceof Error) {
         throw new InternalServerErrorException(
           `Failed to retrieve user comments: ${error.message}`,
@@ -120,7 +127,10 @@ export class CommentService {
       return deletedComment;
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
-      this.logger.error("Error deleting comment", { error, commentId });
+      this.logger.error("Error deleting comment", {
+        error: error.message,
+        commentId,
+      });
       if (error instanceof Error) {
         throw new InternalServerErrorException(
           `Failed to delete comment: ${error.message}`,
@@ -162,7 +172,7 @@ export class CommentService {
         throw error;
       }
       this.logger.error("Error updating comment", {
-        error,
+        error: error.message,
         commentId,
         updateCommentDto,
       });
