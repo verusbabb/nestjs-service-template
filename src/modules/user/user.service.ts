@@ -32,6 +32,12 @@ export class UserService {
         throw new BadRequestException("User with this email already exists");
       }
 
+      // Hash password if it exists
+      if (createUserDto.password) {
+        const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+        createUserDto.password = hashedPassword;
+      }
+
       const newUser = new this.userModel(createUserDto);
       return await newUser.save();
     } catch (error) {
@@ -73,6 +79,7 @@ export class UserService {
 
       const { password, ...userData } = createUserDto;
       const hashedPassword = await bcrypt.hash(password, 10);
+      this.logger.log("Hashed password", hashedPassword);
 
       const newUser = new this.userModel({
         ...userData,
