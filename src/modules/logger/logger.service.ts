@@ -12,18 +12,22 @@ export class CustomLogger implements LoggerService {
   }
 
   log(message: any, ...optionalParams: any[]) {
-    this.logger.info(message, ...optionalParams);
+    const metadata = optionalParams.length ? optionalParams[0] : {};
+    this.logger.info(message, metadata);
   }
 
   error(message: any, ...optionalParams: any[]) {
-    this.logger.error(message, ...optionalParams);
+    const metadata = optionalParams.length ? optionalParams[0] : {};
+    this.logger.error(message, metadata);
   }
 
   warn(message: any, ...optionalParams: any[]) {
-    this.logger.warn(message, ...optionalParams);
+    const metadata = optionalParams.length ? optionalParams[0] : {};
+    this.logger.warn(message, metadata);
   }
 
   debug(message: any, ...optionalParams: any[]) {
-    this.logger.debug(message, ...optionalParams);
+    const metadata = optionalParams.length ? optionalParams[0] : {};
+    this.logger.debug(message, metadata);
   }
 }

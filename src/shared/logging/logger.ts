@@ -22,11 +22,17 @@ export const createLogger = (configService: ConfigService) => {
       configService.get<string>("NODE_ENV") === "production"
         ? winston.format.json() // JSON for structured logging in production
         : winston.format.combine(
-            winston.format.colorize({ all: true }), // Colorize based on the level
+            winston.format.colorize({ all: true }),
             winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-            winston.format.printf(({ level, message, timestamp }) => {
-              return `${timestamp} [${level}]: ${message}`;
-            }),
+            winston.format.printf(
+              ({ level, message, timestamp, ...metadata }) => {
+                // Include any additional metadata in the log
+                const metadataStr = Object.keys(metadata).length
+                  ? ` ${JSON.stringify(metadata)}`
+                  : "";
+                return `${timestamp} [${level}]: ${message}${metadataStr}`;
+              },
+            ),
           ),
     transports,
   });
