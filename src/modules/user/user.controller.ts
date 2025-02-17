@@ -62,6 +62,15 @@ export class UserController {
     }
   }
 
+  @ApiOperation({ summary: "Find a user by email" })
+  @ApiResponse({ status: 200, description: "User found successfully" })
+  @Get("email/:email")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.USER)
+  async findUserByUsername(@Param("username") username: string) {
+    return await this.userService.findByUsername(username);
+  }
+
   @ApiOperation({ summary: "Find a user by ID" })
   @ApiResponse({ status: 200, description: "User found successfully" })
   @Get(":id")

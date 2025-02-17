@@ -11,7 +11,7 @@ export class AuthController {
 
   @Post("login")
   async login(@Body() credentials: LoginDto) {
-    this.logger.log("Login attempt", credentials);
+    this.logger.log("Login attempt", { email: credentials.email });
     try {
       const user = await this.authService.validateUser(
         credentials.email,
