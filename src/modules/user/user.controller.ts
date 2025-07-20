@@ -67,8 +67,8 @@ export class UserController {
   @Get("email/:email")
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.USER)
-  async findUserByUsername(@Param("username") username: string) {
-    return await this.userService.findByUsername(username);
+  async findUserByEmail(@Param("email") email: string) {
+    return await this.userService.findByUsername(email);
   }
 
   @ApiOperation({ summary: "Find a user by ID" })
